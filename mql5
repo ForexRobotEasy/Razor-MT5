@@ -1,0 +1,93 @@
+mql5
+//+------------------------------------------------------------------+
+//|                                                   Razor MT5.mq5 |
+//|                        Copyright 2021, Forex Robot Easy Team     |
+//|                                                forexroboteasy.com|
+//+------------------------------------------------------------------+
+
+// Define trading constants
+#define TP 10                // Take profit in pips
+#define SL 5                 // Stop loss in pips
+#define GRID_SIZE 10         // Number of trades in the grid
+#define GRID_DISTANCE 5      // Distance between grid trades in pips
+
+//+------------------------------------------------------------------+
+//| Expert initialization function                                   |
+//+------------------------------------------------------------------+
+int OnInit()
+{
+   // Set trading parameters
+   SymbolSelect('AUDCAD,NZDUSD,CADJPY'); // Select symbols to trade
+   for(int i=0; i<SymbolsTotal(); i++)
+   {
+      SymbolInfoDouble(SymbolName(i), SYMBOL_TRADE_CONTRACT_SIZE, 0.1); // Set contract size
+      SymbolInfoDouble(SymbolName(i), SYMBOL_TRADE_TICK_SIZE, 0.00001); // Set tick size
+   }
+
+   return(INIT_SUCCEEDED);
+}
+
+//+------------------------------------------------------------------+
+//| Expert tick function                                             |
+//+------------------------------------------------------------------+
+void OnTick()
+{
+   // Check for strong market movements
+   if(IsStrongMovement())
+   {
+      // Execute scalper mechanism
+      ExecuteScalperMechanism();
+      
+      // Execute grid mechanism
+      ExecuteGridMechanism();
+   }
+}
+
+//+------------------------------------------------------------------+
+//| Check if there is a strong market movement                        |
+//+------------------------------------------------------------------+
+bool IsStrongMovement()
+{
+   // Custom logic to determine strong market movements
+   return true;
+}
+
+//+------------------------------------------------------------------+
+//| Execute the scalper mechanism                                    |
+//+------------------------------------------------------------------+
+void ExecuteScalperMechanism()
+{
+   // Custom logic to identify and exploit small price changes
+   // ...
+   // Place trades and manage positions
+   // ...
+}
+
+//+------------------------------------------------------------------+
+//| Execute the grid mechanism                                       |
+//+------------------------------------------------------------------+
+void ExecuteGridMechanism()
+{
+   // Calculate grid levels
+   double gridLevels[GRID_SIZE];
+   double currentPrice = SymbolInfoDouble(Symbol(), SYMBOL_BID);
+   for(int i=0; i<GRID_SIZE; i++)
+   {
+      gridLevels[i] = currentPrice + (i+1) * GRID_DISTANCE * SymbolInfoDouble(Symbol(), SYMBOL_POINT);
+   }
+   
+   // Place grid trades
+   for(int i=0; i<GRID_SIZE; i++)
+   {
+      double gridLevel = gridLevels[i];
+      int ticket = OrderSend(Symbol(), OP_BUYLIMIT, 0.1, gridLevel, 0, 0, 0, 'Grid Trade', 0, 0, CLR_NONE);
+   }
+}
+
+//+------------------------------------------------------------------+
+//| Expert deinitialization function                                 |
+//+------------------------------------------------------------------+
+void OnDeinit(const int reason)
+{
+   // Custom cleanup code if necessary
+}
